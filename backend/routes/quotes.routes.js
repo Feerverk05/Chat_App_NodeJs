@@ -1,24 +1,26 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-// Список цитат (можна зберігати в окремому файлі або базі даних)
 const quotes = [
-    "Життя – це те, що відбувається, поки ви будуєте інші плани.",
-    "Успіх – це йти від невдачі до невдачі без втрати ентузіазму.",
-    "Краще зробити і шкодувати, ніж не зробити і шкодувати.",
-    // Додати більше цитат за потребою
+  "Привіт",
+  "Все добре",
+  "Як справи?",
+  "Немає світла",
+  "Стандартно тримаюсь",
+  "Працюю над собою і всім",
+  "Їла пюре",
+  "Люблю свою роботу",
+  "Хочу Нового року",
+  "Коли будем відпочивати?",
 ];
 
-// Маршрут для отримання випадкової цитати та списку всіх цитат
 router.get('/random', (req, res) => {
     try {
-        const randomNumber = Math.floor(Math.random() * quotes.length); // Генерація випадкового індексу
-        const randomQuote = quotes[randomNumber]; // Вибираємо випадкову цитату з масиву
-        
-        // Відправляємо в JSON: список цитат та випадкову цитату
+        const randomNumber = Math.floor(Math.random() * quotes.length); 
+        const randomQuote = quotes[randomNumber]; 
         res.json({
-            allQuotes: quotes, // Список всіх цитат
-            randomQuote: randomQuote // Випадкова цитата
+            allQuotes: quotes, 
+            randomQuote: randomQuote 
         });
     } catch (error) {
         console.error("Error fetching quotes:", error);
@@ -26,4 +28,4 @@ router.get('/random', (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
