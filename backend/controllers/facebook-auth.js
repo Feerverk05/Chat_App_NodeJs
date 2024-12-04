@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import express from "express";
 import dotenv from "dotenv";
-import User from "../models/user.model.js"; // Переконайтеся, що шлях правильний
+import User from "../models/user.model.js";
 
 dotenv.config();
 const router = express.Router();
@@ -44,7 +44,7 @@ router.get(
     failureRedirect: "/auth/facebook/error",
   }),
   (req, res) => {
-    res.redirect("http://localhost:5000/");
+    res.redirect("http://localhost:3000/");
   }
 );
 
@@ -58,7 +58,7 @@ router.get("/success", async (req, res) => {
 });
 
 router.get("/error", (req, res) =>
-  res.send("Error logging in via Facebook..")
+  res.send("Проблема в реєстрації")
 );
 
 router.get("/signout", (req, res) => {
@@ -68,7 +68,7 @@ router.get("/signout", (req, res) => {
     });
     res.render("auth");
   } catch (err) {
-    res.status(400).send({ message: "Failed to sign out fb user" });
+    res.status(400).send({ message: "Упс.." });
   }
 });
 
