@@ -9,7 +9,8 @@ import Modal from "react-modal";
 const SearchInput = () => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newChatName, setNewChatName] = useState("");
+  const [newChatName, setNewChatName] = useState(""); // Ім'я
+  const [newChatSurname, setNewChatSurname] = useState(""); // Прізвище
 
   const { setSelectedConversation } = useConversation();
   const { conversations, setConversations } = useGetConversations();
@@ -35,18 +36,19 @@ const SearchInput = () => {
 
   const handleNewChatSubmit = (e) => {
     e.preventDefault();
-    if (!newChatName.trim()) {
-      return toast.error("Chat name cannot be empty!");
+    if (!newChatName.trim() || !newChatSurname.trim()) {
+      return toast.error("Chat name and surname cannot be empty!");
     }
 
     const newChat = {
       id: conversations.length + 1,
-      fullName: newChatName,
+      fullName: `${newChatName} ${newChatSurname}`, 
       messages: [],
     };
     setConversations([...conversations, newChat]);
-    toast.success(`Chat with ${newChatName} created!`);
+    toast.success(`Chat with ${newChatName} ${newChatSurname} created!`);
     setNewChatName("");
+    setNewChatSurname(""); 
     setIsModalOpen(false);
   };
 
@@ -66,7 +68,6 @@ const SearchInput = () => {
         />
       </form>
 
-      
       <button
         className="btn btn-circle bg-black text-white"
         onClick={() => setIsModalOpen(true)} 
@@ -74,7 +75,6 @@ const SearchInput = () => {
         <FiEdit className="w-5 h-5" />
       </button>
 
-      
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)} 
@@ -87,15 +87,28 @@ const SearchInput = () => {
           <form onSubmit={handleNewChatSubmit} className="space-y-4">
             <div>
               <label htmlFor="chatName" className="block text-sm font-medium text-gray-700">
-                Введи нікнейм:
+                Ім'я:
               </label>
               <input
                 id="chatName"
                 type="text"
-                placeholder="Enter username…"
+                placeholder="Введіть"
                 className="input input-bordered w-full"
                 value={newChatName}
                 onChange={(e) => setNewChatName(e.target.value)} 
+              />
+            </div>
+            <div>
+              <label htmlFor="chatSurname" className="block text-sm font-medium text-gray-700">
+                Прізвище:
+              </label>
+              <input
+                id="chatSurname"
+                type="text"
+                placeholder="Введіть"
+                className="input input-bordered w-full"
+                value={newChatSurname}
+                onChange={(e) => setNewChatSurname(e.target.value)} 
               />
             </div>
 
