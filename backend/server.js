@@ -9,6 +9,7 @@ import googleRouter from './controllers/google-auth.js';
 import messageRoutes from './routes/message.routes.js';
 import userRoutes from './routes/user.routes.js';
 import quotesRouter from './routes/quotes.routes.js';
+import conversationRoutes from './routes/conversation.routes.js';
 import connectToMongoDB from './db/connectToMongoDB.js';
 import { app, server } from './socket/socket.js';
 import facebookRouter from './controllers/facebook-auth.js';
@@ -45,6 +46,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/auth/facebook", facebookRouter);
 app.use('/auth/google', googleRouter);
+app.use("/api/conversations", conversationRoutes);
 app.use("/api/quotes", quotesRouter);
 
 app.put('/api/updateConversation/:id', (req, res) => {
