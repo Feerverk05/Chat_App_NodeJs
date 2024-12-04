@@ -1,58 +1,67 @@
-import { useEffect, useRef } from "react";
-import useGetMessages from "../hooks/useGetMessages";
-import MessageSkeleton from "../skeletons/MessageSkeleton";
+import { useEffect, useRef, useState } from "react";
 import Message from "./Message";
-import useListenMessages from "../hooks/useListenMessages";
+import useConversation from "../zustand/useConversation";
 
-const Messages = () => {
-	const { messages, loading } = useGetMessages();
-	useListenMessages();
-	const lastMessageRef = useRef();
+const Messages = ({ searchQuery }) => {
+  const { selectedConversation } = useConversation();
+  const lastMessageRef = useRef();
+  const [noResults, setNoResults] = useState(false);
 
-	useEffect(() => {
-		setTimeout(() => {
-			lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-		}, 100);
-	}, [messages]);
+  useEffect(() => {
+    setTimeout(() => {
+      lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [selectedConversation?.messages]);
 
-	return (
-		<div className='px-4 flex-1 overflow-auto'>
-			{!loading &&
-				messages.length > 0 &&
-				messages.map((message) => (
-					<div key={message._id} ref={lastMessageRef}>
-						<Message message={message} />
-					</div>
-				))}
+  if (!selectedConversation) {
+    return <p className="text-center text-gray-500">Виберіть розмову</p>;
+  }
 
-			{loading && [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)}
-			{!loading && messages.length === 0 && (
-				<p className='text-center'>Send a message to start the conversation</p>
-			)}
-		</div>
-	);
+  const messages = selectedConversation.messages || [];
+
+  const filteredMessages = messages.filter((message) =>
+    message.text?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  useEffect(() => {
+    if (filteredMessages.length === 0 && searchQuery.trim() !== "") {
+      setNoResults(true);
+    } else {
+      setNoResults(false);
+    }
+  }, [searchQuery, filteredMessages.length]);
+
+  const highlightText = (text) => {
+    if (!searchQuery.trim()) return text;
+
+    const regex = new RegExp(`(${searchQuery})`, "gi");
+    return text.split(regex).map((part, index) =>
+      part.toLowerCase() === searchQuery.toLowerCase() ? (
+        <span key={index} className="bg-yellow-300">{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  return (
+    <div className="px-4 flex-1 overflow-auto">
+      {noResults ? (
+        <p className="text-center text-red-500">Повідомлення не знайдено</p> 
+      ) : (
+        filteredMessages.map((message, index) => (
+          <div
+            key={message._id || index}
+            ref={index === filteredMessages.length - 1 ? lastMessageRef : null}
+            className="message"
+          >
+            {/* Виділення тексту повідомлення */}
+            <Message message={{ ...message, text: highlightText(message.text) }} />
+          </div>
+        ))
+      )}
+    </div>
+  );
 };
+
 export default Messages;
-
-// STARTER CODE SNIPPET
-// import Message from "./Message";
-
-// const Messages = () => {
-// 	return (
-// 		<div className='px-4 flex-1 overflow-auto'>
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 			<Message />
-// 		</div>
-// 	);
-// };
-// export default Messages;
