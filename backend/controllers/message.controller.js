@@ -27,6 +27,8 @@ export const sendMessage = async (req, res) => {
 		if (newMessage) {
 			conversation.messages.push(newMessage._id);
 		}
+
+		
 		await Promise.all([conversation.save(), newMessage.save()]);
 
 		const receiverSocketId = getReceiverSocketId(receiverId);
@@ -48,7 +50,7 @@ export const getMessages = async (req, res) => {
 
 		const conversation = await Conversation.findOne({
 			participants: { $all: [senderId, userToChatId] },
-		}).populate("messages"); // NOT REFERENCE BUT ACTUAL MESSAGES
+		}).populate("messages");
 
 		if (!conversation) return res.status(200).json([]);
 
