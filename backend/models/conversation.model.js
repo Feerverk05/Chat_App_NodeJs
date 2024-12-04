@@ -15,6 +15,7 @@ const conversationSchema = new mongoose.Schema(
 				default: [],
 			},
 		],
+		fullName: { type: String }, 
 	},
 	{ timestamps: true }
 );
