@@ -9,12 +9,13 @@ import Modal from "react-modal";
 const SearchInput = () => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newChatName, setNewChatName] = useState(""); // Ім'я
-  const [newChatSurname, setNewChatSurname] = useState(""); // Прізвище
+  const [newChatName, setNewChatName] = useState("");
+  const [newChatGender, setNewChatGender] = useState(""); 
 
   const { setSelectedConversation } = useConversation();
   const { conversations, setConversations } = useGetConversations();
 
+  // Обробка пошуку
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!search.trim()) return;
@@ -34,22 +35,43 @@ const SearchInput = () => {
     }
   };
 
-  const handleNewChatSubmit = (e) => {
+  const handleNewChatSubmit = async (e) => {
     e.preventDefault();
-    if (!newChatName.trim() || !newChatSurname.trim()) {
-      return toast.error("Chat name and surname cannot be empty!");
+
+    if (!newChatName.trim() || !newChatGender.trim()) {
+      return toast.error("Full name and gender cannot be empty!");
     }
 
     const newChat = {
-      id: conversations.length + 1,
-      fullName: `${newChatName} ${newChatSurname}`, 
-      messages: [],
+      fullName: newChatName,
+      gender: newChatGender,
     };
-    setConversations([...conversations, newChat]);
-    toast.success(`Chat with ${newChatName} ${newChatSurname} created!`);
-    setNewChatName("");
-    setNewChatSurname(""); 
-    setIsModalOpen(false);
+
+    try {
+      const response = await fetch('/api/conversations/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newChat),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create chat");
+      }
+
+      const data = await response.json();
+      setConversations([...conversations, data]);
+
+      toast.success(`Chat with ${newChatName} created!`);
+      setNewChatName("");
+      setNewChatGender(""); 
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error("Error creating chat!");
+      console.error(error);
+    }
   };
 
   return (
@@ -70,14 +92,14 @@ const SearchInput = () => {
 
       <button
         className="btn btn-circle bg-black text-white"
-        onClick={() => setIsModalOpen(true)} 
+        onClick={() => setIsModalOpen(true)}
       >
         <FiEdit className="w-5 h-5" />
       </button>
 
       <Modal
         isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)} 
+        onRequestClose={() => setIsModalOpen(false)}
         ariaHideApp={false}
         className="modal-content absolute top-0 left-1/2 transform -translate-x-1/2 p-6 bg-transparent border-none"
         overlayClassName="modal-overlay fixed inset-0 bg-black bg-opacity-50"
@@ -95,20 +117,20 @@ const SearchInput = () => {
                 placeholder="Введіть"
                 className="input input-bordered w-full"
                 value={newChatName}
-                onChange={(e) => setNewChatName(e.target.value)} 
+                onChange={(e) => setNewChatName(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="chatSurname" className="block text-sm font-medium text-gray-700">
-                Прізвище:
+              <label htmlFor="chatGender" className="block text-sm font-medium text-gray-700">
+                Стать:
               </label>
               <input
-                id="chatSurname"
+                id="chatGender"
                 type="text"
-                placeholder="Введіть"
+                placeholder="Введіть (наприклад, Male/Female)"
                 className="input input-bordered w-full"
-                value={newChatSurname}
-                onChange={(e) => setNewChatSurname(e.target.value)} 
+                value={newChatGender}
+                onChange={(e) => setNewChatGender(e.target.value)}
               />
             </div>
 
