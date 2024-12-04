@@ -15,7 +15,6 @@ const SearchInput = () => {
   const { setSelectedConversation } = useConversation();
   const { conversations, setConversations } = useGetConversations();
 
-  // Обробка пошуку
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!search.trim()) return;
