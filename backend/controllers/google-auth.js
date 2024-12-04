@@ -1,9 +1,10 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const express = require('express');
-const googleAuth = require('../models/google-authee');
+import express from 'express'; 
+import passport from 'passport'; 
+import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth';
+import googleAuth from '../models/google-authee.js';
 const router = express.Router();
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 let userProfile;
 passport.use(
@@ -20,19 +21,16 @@ passport.use(
   )
 );
 
-// request at /auth/google, when user click sign-up with google button transferring
-// the request to google server, to show emails screen
 router.get(
   '/',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-// URL Must be same as 'Authorized redirect URIs' field of OAuth client, i.e: /auth/google/callback
 router.get(
   '/callback',
   passport.authenticate('google', { failureRedirect: '/auth/google/error' }),
   (req, res) => {
-    res.redirect('/auth/google/success'); // Successful authentication, redirect success.
+    res.redirect('/auth/google/success'); 
   }
 );
 
@@ -56,4 +54,4 @@ router.get('/signout', (req, res) => {
   }
 });
 
-module.exports = router;
+export default router; 
